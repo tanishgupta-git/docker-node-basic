@@ -1,0 +1,21 @@
+version: "3"
+services: 
+  node-app:
+    build: .
+    ports:
+      - "5000:5000"
+    environment: 
+      - PORT=5000
+    depends_on: 
+      - mongo
+  mongo:
+    image: mongo
+    environment: 
+      - MONGO_INITDB_ROOT_USERNAME=dockuser
+      - MONGO_INITDB_ROOT_PASSWORD=mypassword
+    volumes: 
+      - mongo-db:/data/db
+  redis:
+    image: redis
+volumes: 
+  mongo-db:
