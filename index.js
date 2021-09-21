@@ -2,6 +2,7 @@ const express = require('express')
 const mongoose = require('mongoose');
 const redis = require('redis')
 const session = require('express-session')
+const cors = require('cors');
 let RedisStore = require('connect-redis')(session)
 const { MONGO_USER,MONGO_PASSWORD,MONGO_PORT,MONGO_IP, REDIS_URL, REDIS_PORT, SESSION_SECRET} = require('./config/config');
 let redisClient = redis.createClient({
@@ -31,6 +32,8 @@ const connectWithRetry = () => {
 
 connectWithRetry();
 
+app.enable("trust proxy");
+app.use(cors());
 app.use(session({
     store : new RedisStore({client:redisClient}),
     secret : SESSION_SECRET,
@@ -43,13 +46,14 @@ app.use(session({
     }
 
 }))
-
-app.use(express.json());
-app.get('/',(req,res) => {
-    res.send('Hii From Testing In Core Docker!!')
+app.get('/api/v1',(req,res) => {
+    res.send('Hii From Testing In Core Docker!!');
+    console.log("Yeah it rain");
 })
+app.use(express.json());
 app.use('/api/v1/posts',postRouter);
 app.use('/api/v1/users',userRouter);
+
 const PORT = process.env.PORT || 5000
 
 app.listen(PORT,() => {
